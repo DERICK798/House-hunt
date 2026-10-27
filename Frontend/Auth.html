@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f8f4">
+    <title>Sign in or create an account | Haven</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #202b25;
+            --muted: #68756c;
+            --green: #315c45;
+            --green-dark: #244735;
+            --paper: #f7f8f4;
+            --white: #fff;
+            --line: #e5e9e3;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+        body { min-height: 100vh; margin: 0; color: var(--ink); background: var(--paper); }
+        a { color: inherit; text-decoration: none; }
+        button, input, select { font: inherit; }
+        .container { width: min(1040px, calc(100% - 40px)); margin: 0 auto; }
+        header { border-bottom: 1px solid var(--line); }
+        .header { height: 74px; display: flex; align-items: center; justify-content: space-between; }
+        .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 750; letter-spacing: -.7px; }
+        .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; color: var(--white); background: var(--green); border-radius: 11px; }
+        .brand-mark svg { width: 20px; height: 20px; }
+        .back-link { color: var(--green); font-size: 13px; font-weight: 650; }
+        main { min-height: calc(100vh - 140px); display: grid; place-items: center; padding: 42px 0; }
+        .auth-layout { display: grid; grid-template-columns: 1fr minmax(360px, 460px); align-items: center; gap: clamp(35px, 7vw, 90px); }
+        .intro { max-width: 400px; }
+        .eyebrow { color: var(--green); font-size: 11px; font-weight: 750; letter-spacing: 1.2px; text-transform: uppercase; }
+        h1 { margin: 13px 0 12px; font-size: clamp(34px, 4vw, 48px); line-height: 1.08; letter-spacing: -2px; }
+        .intro p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
+        .panel { padding: 28px; background: var(--white); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 18px 45px rgba(32, 43, 37, .07); }
+        .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 23px; padding: 5px; background: #f1f4ef; border-radius: 10px; }
+        .tab { min-height: 39px; border: 0; border-radius: 7px; color: var(--muted); background: transparent; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .tab[aria-selected="true"] { color: var(--green-dark); background: var(--white); box-shadow: 0 1px 4px rgba(32, 43, 37, .09); }
+        .form-title { margin: 0; font-size: 20px; letter-spacing: -.5px; }
+        .form-copy { margin: 6px 0 19px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+        .field { margin-top: 14px; }
+        label { display: block; margin-bottom: 6px; color: #4d5a51; font-size: 12px; font-weight: 700; }
+        input, select { width: 100%; min-height: 43px; padding: 10px 11px; color: var(--ink); background: var(--white); border: 1px solid #dce3dc; border-radius: 8px; outline: none; font-size: 13px; }
+        input:focus, select:focus { border-color: #6e9278; box-shadow: 0 0 0 3px rgba(49, 92, 69, .1); }
+        .button { width: 100%; min-height: 45px; margin-top: 19px; color: var(--white); background: var(--green); border: 0; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .button:hover { background: var(--green-dark); }
+        .notice { margin: 0 0 17px; padding: 11px 12px; color: #405b48; background: #e9f0e9; border: 1px solid #d7e4d8; border-radius: 8px; font-size: 11px; line-height: 1.55; }
+        .status { min-height: 20px; margin: 12px 0 0; color: var(--green-dark); font-size: 12px; line-height: 1.5; }
+        .status.error { color: #8c302a; }
+        footer { padding: 17px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; text-align: center; }
+        [hidden] { display: none !important; }
+
+        @media (max-width: 760px) {
+            .container { width: min(100% - 32px, 480px); }
+            .header { height: 66px; }
+            main { min-height: auto; padding: 34px 0 46px; }
+            .auth-layout { grid-template-columns: 1fr; gap: 22px; }
+            .intro { max-width: none; }
+            .intro h1 { font-size: 37px; }
+            .intro p { font-size: 14px; }
+            .panel { padding: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header">
+            <a class="brand" href="Home.html" aria-label="Haven home">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="m3.5 11 8.5-7 8.5 7v8.5a1 1 0 0 1-1 1h-5.2v-6.1H9.7v6.1H4.5a1 1 0 0 1-1-1V11Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                Haven
+            </a>
+            <a class="back-link" href="Home.html">← Back to homes</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="auth-layout">
+            <section class="intro">
+                <span class="eyebrow">A home for every search</span>
+                <h1>Good to have you here.</h1>
+                <p>Sign in to continue, or create an account to get started as a tenant or landlord.</p>
+            </section>
+
+            <section class="panel" aria-label="Account access">
+                <div class="notice" role="note">
+                    Sign-in and registration use the House Hunt API at localhost:5000 and save accounts through the configured MySQL database.
+                </div>
+                <div class="tabs" role="tablist" aria-label="Choose sign in or registration">
+                    <button class="tab" id="login-tab" type="button" role="tab" aria-selected="true" aria-controls="login-panel">Sign in</button>
+                    <button class="tab" id="register-tab" type="button" role="tab" aria-selected="false" aria-controls="register-panel" tabindex="-1">Create account</button>
+                </div>
+
+                <section id="login-panel" role="tabpanel" aria-labelledby="login-tab">
+                    <h2 class="form-title">Welcome back</h2>
+                    <p class="form-copy">Sign in with your email and select your account role.</p>
+                    <form id="login-form">
+                        <div class="field">
+                            <label for="login-email">Email address</label>
+                            <input id="login-email" name="email" type="email" maxlength="150" autocomplete="email" required>
+                        </div>
+                        <div class="field">
+                            <label for="login-password">Password</label>
+                            <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+                        </div>
+                        <div class="field">
+                            <label for="login-role">I am signing in as</label>
+                            <select id="login-role" name="role" required>
+                                <option value="tenant">Tenant</option>
+                                <option value="landlord">Landlord</option>
+                            </select>
+                        </div>
+                        <button class="button" type="submit">Sign in</button>
+                        <p class="status" id="login-status" role="status" aria-live="polite"></p>
+                    </form>
+                </section>
+
+                <section id="register-panel" role="tabpanel" aria-labelledby="register-tab" hidden>
+                    <h2 class="form-title">Create your account</h2>
+                    <p class="form-copy">Choose tenant or landlord to set up your account.</p>
+                    <form id="register-form">
+                        <div class="field">
+                            <label for="register-name">Full name</label>
+                            <input id="register-name" name="full_name" type="text" maxlength="100" autocomplete="name" required>
+                        </div>
+                        <div class="field">
+                            <label for="register-email">Email address</label>
+                            <input id="register-email" name="email" type="email" maxlength="150" autocomplete="email" required>
+                        </div>
+                        <div class="field">
+                            <label for="register-phone">Phone number</label>
+                            <input id="register-phone" name="phone" type="tel" maxlength="20" autocomplete="tel" placeholder="0712345678 or +254712345678" required>
+                        </div>
+                        <div class="field">
+                            <label for="register-password">Password</label>
+                            <input id="register-password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+                        </div>
+                        <div class="field">
+                            <label for="register-role">I am joining as</label>
+                            <select id="register-role" name="role" required>
+                                <option value="tenant">Tenant</option>
+                                <option value="landlord">Landlord</option>
+                            </select>
+                        </div>
+                        <button class="button" type="submit">Create account</button>
+                        <p class="status" id="register-status" role="status" aria-live="polite"></p>
+                    </form>
+                </section>
+            </section>
+        </div>
+    </main>
+    <footer>Haven · House search for tenants and landlords</footer>
+    <script src="auth.js" defer></script>
+</body>
+</html>

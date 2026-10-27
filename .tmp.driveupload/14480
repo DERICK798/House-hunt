@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f8f4">
+    <meta name="description" content="Find a place to call home, or connect your rental with the right tenant.">
+    <title>Haven — Find a place to call home</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #202b25;
+            --muted: #68756c;
+            --green: #315c45;
+            --green-dark: #244735;
+            --mint: #e8efe8;
+            --paper: #f7f8f4;
+            --white: #fff;
+            --line: #e5e9e3;
+            --shadow: 0 18px 45px rgba(32, 43, 37, .08);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; color: var(--ink); background: var(--paper); }
+        a { color: inherit; text-decoration: none; }
+        button, input, select { font: inherit; }
+        button, a { -webkit-tap-highlight-color: transparent; }
+        .container { width: min(1160px, calc(100% - 48px)); margin: 0 auto; }
+
+        .site-header {
+            position: sticky;
+            z-index: 10;
+            top: 0;
+            background: rgba(247, 248, 244, .94);
+            border-bottom: 1px solid rgba(229, 233, 227, .8);
+            backdrop-filter: blur(14px);
+        }
+        .nav { height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+        .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 750; letter-spacing: -.7px; }
+        .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; color: var(--white); background: var(--green); border-radius: 11px; }
+        .brand-mark svg { width: 20px; height: 20px; }
+        .nav-links { display: flex; align-items: center; gap: 32px; color: #536057; font-size: 14px; font-weight: 550; }
+        .nav-links a:hover, .text-link:hover { color: var(--green); }
+        .nav-actions { display: flex; align-items: center; gap: 18px; font-size: 14px; font-weight: 650; }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px;
+            padding: 0 19px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            background: var(--green);
+            color: var(--white);
+            font-weight: 650;
+            cursor: pointer;
+            transition: background .18s ease, transform .18s ease;
+        }
+        .button:hover { background: var(--green-dark); transform: translateY(-1px); }
+        .button-light { color: var(--green); background: var(--white); border-color: var(--line); }
+        .button-light:hover { color: var(--green-dark); background: #f2f5f0; }
+        .text-link { color: var(--green); font-weight: 700; }
+
+        .hero { padding: 70px 0 62px; overflow: hidden; }
+        .hero-grid { display: grid; grid-template-columns: 1.03fr .97fr; align-items: center; gap: 54px; }
+        .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--green); font-size: 12px; font-weight: 750; letter-spacing: 1.4px; text-transform: uppercase; }
+        .eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: #86a58f; }
+        h1 { max-width: 590px; margin: 17px 0 18px; font-size: clamp(42px, 5.5vw, 66px); line-height: 1.05; letter-spacing: -3.8px; font-weight: 680; }
+        .hero-copy { max-width: 495px; margin: 0; color: var(--muted); font-size: 17px; line-height: 1.7; }
+        .search-card { position: relative; z-index: 2; display: grid; grid-template-columns: 1.2fr 1fr 1fr auto; align-items: end; gap: 10px; margin-top: 31px; padding: 13px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+        .field { min-width: 0; padding: 0 9px; }
+        .field label { display: block; margin-bottom: 7px; color: #647168; font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; }
+        .field input, .field select { width: 100%; min-width: 0; padding: 0 0 2px; border: 0; outline: 0; color: var(--ink); background: transparent; font-size: 13px; }
+        .field input::placeholder { color: #8c968f; }
+        .search-button { width: 48px; height: 48px; padding: 0; border-radius: 10px; }
+        .search-button svg { width: 19px; height: 19px; }
+        .hero-note { margin: 12px 0 0 4px; color: #79847c; font-size: 12px; }
+        .hero-visual { position: relative; min-height: 440px; }
+        .hero-image { position: absolute; inset: 0 0 0 35px; overflow: hidden; border-radius: 22px 22px 22px 100px; background: #dce6dc; }
+        .hero-image img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        .hero-image::after { position: absolute; inset: 45% 0 0; content: ""; background: linear-gradient(transparent, rgba(25, 39, 29, .3)); }
+        .floating-card { position: absolute; z-index: 1; display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--white); border: 1px solid rgba(229, 233, 227, .8); border-radius: 13px; box-shadow: var(--shadow); }
+        .floating-card.top { top: 40px; left: 0; }
+        .floating-card.bottom { right: -5px; bottom: 32px; }
+        .mini-icon { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 10px; color: var(--green); background: var(--mint); }
+        .mini-icon svg { width: 19px; height: 19px; }
+        .floating-card strong { display: block; font-size: 13px; }
+        .floating-card span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+
+        .section { padding: 56px 0 70px; }
+        .section-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 25px; }
+        .section-title { margin: 10px 0 0; font-size: clamp(27px, 3.6vw, 38px); line-height: 1.15; letter-spacing: -1.5px; font-weight: 680; }
+        .section-subtitle { margin: 9px 0 0; color: var(--muted); font-size: 14px; }
+        .listing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .listing-card { overflow: hidden; background: var(--white); border: 1px solid var(--line); border-radius: 15px; transition: transform .2s ease, box-shadow .2s ease; }
+        .listing-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .listing-photo { position: relative; height: 222px; overflow: hidden; background: var(--mint); }
+        .listing-photo img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform .35s ease; }
+        .listing-card:hover .listing-photo img { transform: scale(1.035); }
+        .badge { position: absolute; top: 13px; left: 13px; padding: 7px 10px; color: var(--green-dark); background: rgba(255, 255, 255, .94); border-radius: 7px; font-size: 10px; font-weight: 750; letter-spacing: .25px; text-transform: uppercase; }
+        .favorite { position: absolute; top: 11px; right: 12px; width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 50%; color: #445149; background: rgba(255, 255, 255, .94); cursor: pointer; }
+        .favorite svg { width: 17px; height: 17px; }
+        .favorite[aria-pressed="true"] { color: #bd5e55; }
+        .favorite[aria-pressed="true"] svg { fill: currentColor; }
+        .listing-info { padding: 16px 17px 18px; }
+        .listing-price { display: flex; align-items: baseline; gap: 4px; font-size: 19px; font-weight: 750; letter-spacing: -.4px; }
+        .listing-price span { color: var(--muted); font-size: 12px; font-weight: 500; letter-spacing: 0; }
+        .listing-name { margin: 8px 0 5px; font-size: 15px; font-weight: 700; }
+        .listing-location { margin: 0; color: var(--muted); font-size: 12px; }
+        .listing-details { display: flex; gap: 17px; margin-top: 15px; padding-top: 13px; border-top: 1px solid var(--line); color: #59665d; font-size: 11px; }
+        .listing-details span { display: inline-flex; align-items: center; gap: 6px; }
+        .listing-details svg { width: 14px; height: 14px; color: var(--green); }
+        .listing-availability { margin: 10px 0 0; color: var(--green-dark); font-size: 12px; font-weight: 700; }
+        .listing-amenities { margin: 6px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+        .booking-button { min-height: 40px; margin-top: 14px; padding: 0 13px; border: 0; border-radius: 8px; color: var(--white); background: var(--green); font-size: 12px; font-weight: 700; cursor: pointer; }
+        .booking-button:hover:not(:disabled) { background: var(--green-dark); }
+        .booking-button:disabled { cursor: not-allowed; opacity: .7; }
+        .tenant-bookings { display: none; margin-top: 30px; padding: 22px; background: var(--white); border: 1px solid var(--line); border-radius: 15px; }
+        .tenant-bookings h3 { margin: 0; font-size: 17px; }
+        .booking-list { display: grid; gap: 10px; margin-top: 14px; }
+        .booking-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px; border: 1px solid var(--line); border-radius: 10px; }
+        .booking-row p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+        .booking-cancel { min-height: 34px; padding: 0 10px; border: 1px solid #ead3d1; border-radius: 7px; color: #8c3731; background: white; font-size: 11px; font-weight: 650; cursor: pointer; }
+        .empty-state { display: none; padding: 38px; text-align: center; color: var(--muted); background: var(--white); border: 1px dashed #cbd5cb; border-radius: 14px; }
+
+        .landlord-section { padding: 0 0 76px; }
+        .landlord-panel { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 30px; padding: 39px 44px; color: var(--white); background: var(--green-dark); border-radius: 20px; }
+        .landlord-panel .eyebrow { color: #c3d5c7; }
+        .landlord-panel h2 { margin: 11px 0 8px; font-size: clamp(25px, 3vw, 34px); letter-spacing: -1px; }
+        .landlord-panel p { max-width: 575px; margin: 0; color: #d2ded4; font-size: 14px; line-height: 1.7; }
+        .landlord-panel .button { color: var(--green-dark); background: var(--white); white-space: nowrap; }
+        .landlord-panel .button:hover { background: #edf2ed; }
+
+        .how-section { padding: 0 0 76px; }
+        .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-top: 27px; }
+        .step { padding: 20px 0; border-top: 1px solid #dce3dc; }
+        .step-number { color: #8a9d8d; font-size: 12px; font-weight: 750; letter-spacing: 1px; }
+        .step h3 { margin: 13px 0 7px; font-size: 16px; }
+        .step p { max-width: 310px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+
+        footer { padding: 22px 0; border-top: 1px solid var(--line); }
+        .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; color: var(--muted); font-size: 12px; }
+        .footer-brand { color: var(--ink); font-size: 16px; }
+
+        .toast { position: fixed; z-index: 20; right: 22px; bottom: 22px; max-width: min(360px, calc(100vw - 44px)); padding: 13px 17px; color: white; background: #263c2e; border-radius: 10px; box-shadow: var(--shadow); font-size: 13px; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
+        .toast.is-visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 900px) {
+            .nav-links { gap: 18px; }
+            .hero { padding-top: 52px; }
+            .hero-grid { grid-template-columns: 1fr .82fr; gap: 25px; }
+            .hero-visual { min-height: 370px; }
+            .search-card { grid-template-columns: 1fr 1fr; }
+            .search-button { width: 100%; }
+            .listing-photo { height: 180px; }
+            .landlord-panel { padding: 34px; }
+        }
+        @media (max-width: 680px) {
+            .container { width: min(100% - 32px, 520px); }
+            .nav { height: 66px; }
+            .nav-links { display: none; }
+            .nav-actions { gap: 12px; }
+            .nav-actions > a:first-child { display: none; }
+            .nav-actions .button { min-height: 40px; padding: 0 13px; font-size: 12px; }
+            .hero { padding: 42px 0 32px; }
+            .hero-grid { grid-template-columns: 1fr; gap: 30px; }
+            h1 { max-width: 470px; font-size: clamp(43px, 12vw, 58px); letter-spacing: -2.9px; }
+            .hero-copy { font-size: 15px; }
+            .hero-visual { min-height: 310px; }
+            .hero-image { inset: 0 0 0 24px; border-radius: 18px 18px 18px 70px; }
+            .floating-card.top { top: 22px; }
+            .floating-card.bottom { right: 0; bottom: 18px; }
+            .search-card { margin-top: 23px; }
+            .section { padding: 38px 0 50px; }
+            .section-head { align-items: start; }
+            .section-head > .text-link { margin-top: 13px; white-space: nowrap; font-size: 12px; }
+            .listing-grid { grid-template-columns: 1fr; gap: 14px; }
+            .listing-photo { height: 235px; }
+            .landlord-section, .how-section { padding-bottom: 52px; }
+            .landlord-panel { grid-template-columns: 1fr; gap: 22px; padding: 28px 24px; }
+            .landlord-panel .button { justify-self: start; }
+            .steps { grid-template-columns: 1fr; gap: 5px; }
+            .step p { max-width: none; }
+            .footer-inner { align-items: flex-start; flex-direction: column; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container nav">
+            <a class="brand" href="#home" aria-label="Haven home">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="m3.5 11 8.5-7 8.5 7v8.5a1 1 0 0 1-1 1h-5.2v-6.1H9.7v6.1H4.5a1 1 0 0 1-1-1V11Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                Haven
+            </a>
+            <nav class="nav-links" aria-label="Main navigation">
+                <a href="#homes">Find a home</a>
+                <a href="#how-it-works">How it works</a>
+                <a href="#landlords">For landlords</a>
+            </nav>
+            <div class="nav-actions">
+                <a class="text-link" id="auth-link" href="Auth.html?mode=login&amp;role=tenant">Sign in</a>
+                <a class="button" href="Auth.html?mode=register&amp;role=landlord">List a property</a>
+            </div>
+        </div>
+    </header>
+
+    <main id="home">
+        <section class="hero">
+            <div class="container hero-grid">
+                <div>
+                    <span class="eyebrow"><span class="eyebrow-dot"></span> A better way to find home</span>
+                    <h1>Find a place that feels like <span style="color: var(--green)">yours.</span></h1>
+                    <p class="hero-copy">A simpler way for renters to find their next home and for landlords to meet the right people.</p>
+                    <form class="search-card" id="search-form" role="search">
+                        <div class="field">
+                            <label for="location">Where</label>
+                            <input id="location" name="location" type="search" placeholder="City or neighborhood" autocomplete="off">
+                        </div>
+                        <div class="field">
+                            <label for="home-type">Home type</label>
+                            <select id="home-type" name="type">
+                                <option value="">Any type</option>
+                                <option value="Single room">Single room</option>
+                                <option value="Bedsitter">Bedsitter</option>
+                                <option value="One bedroom">One bedroom</option>
+                                <option value="Apartment">Apartment</option>
+                                <option value="House">House</option>
+                                <option value="Studio">Studio</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="budget">Max. monthly rent</label>
+                            <select id="budget" name="budget">
+                                <option value="">Any budget</option>
+                                <option value="25000">Up to KSh 25,000</option>
+                                <option value="50000">Up to KSh 50,000</option>
+                                <option value="75000">Up to KSh 75,000</option>
+                            </select>
+                        </div>
+                        <button class="button search-button" type="submit" aria-label="Search homes">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        </button>
+                    </form>
+                    <p class="hero-note">Search homes by location, type, and monthly rent.</p>
+                </div>
+                <div class="hero-visual" aria-label="A bright, welcoming modern home">
+                    <div class="hero-image">
+                        <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&amp;fit=crop&amp;w=1100&amp;q=85" alt="Sunlit living room with warm wood and comfortable seating">
+                    </div>
+                    <div class="floating-card top">
+                        <span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.7"/></svg></span>
+                        <span><strong>Your next neighborhood</strong><span>Find a place near what matters</span></span>
+                    </div>
+                    <div class="floating-card bottom">
+                        <span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5m0 14h16M7 15l4-4 3 2 5-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                        <span><strong>Made for both sides</strong><span>Renters and property owners</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="homes">
+            <div class="container">
+                <div class="section-head">
+                    <div>
+                        <span class="eyebrow"><span class="eyebrow-dot"></span> Database listings</span>
+                        <h2 class="section-title">Homes worth coming home to</h2>
+                        <p class="section-subtitle" id="results-count" role="status" aria-live="polite">Loading homes from the database...</p>
+                    </div>
+                    <a class="text-link" href="#search-form">Search homes <span aria-hidden="true">→</span></a>
+                </div>
+                <div class="listing-grid" id="listing-grid"></div>
+                <div class="empty-state" id="empty-state" role="status">No homes match those filters. Try another search.</div>
+                <section class="tenant-bookings" id="tenant-bookings" aria-labelledby="tenant-bookings-title">
+                    <h3 id="tenant-bookings-title">Your booking requests</h3>
+                    <div class="booking-list" id="tenant-booking-list" aria-live="polite"></div>
+                </section>
+            </div>
+        </section>
+
+        <section class="landlord-section" id="landlords">
+            <div class="container">
+                <div class="landlord-panel">
+                    <div>
+                        <span class="eyebrow"><span class="eyebrow-dot"></span> For property owners</span>
+                        <h2>Your next great tenant starts here.</h2>
+                        <p>Showcase your rental, connect with people looking for a home, and make the search feel simpler for everyone.</p>
+                    </div>
+                    <a class="button" href="Auth.html?mode=register&amp;role=landlord">List your property <span aria-hidden="true">&nbsp;→</span></a>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-section" id="how-it-works">
+            <div class="container">
+                <span class="eyebrow"><span class="eyebrow-dot"></span> Clear from the start</span>
+                <h2 class="section-title">A better search, for both sides.</h2>
+                <div class="steps">
+                    <article class="step">
+                        <span class="step-number">01 — TENANTS</span>
+                        <h3>Find your fit</h3>
+                        <p>Explore homes and narrow your search by the details that matter to you.</p>
+                    </article>
+                    <article class="step">
+                        <span class="step-number">02 — LANDLORDS</span>
+                        <h3>Share your space</h3>
+                        <p>Present your rental clearly so prospective tenants can picture their next home.</p>
+                    </article>
+                    <article class="step">
+                        <span class="step-number">03 — TOGETHER</span>
+                        <h3>Make a connection</h3>
+                        <p>Bring people and available homes together in one straightforward place.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-inner">
+            <a class="brand footer-brand" href="#home">Haven</a>
+            <span>All property listings are currently shown while admin review is being built.</span>
+            <span>&copy; <span id="current-year"></span> Haven</span>
+        </div>
+    </footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+        const apiUrl = "http://localhost:5000/api/properties";
+        const apiOrigin = "http://localhost:5000";
+        const bookingApiUrl = "http://localhost:5000/api/bookings";
+        const authApiUrl = "http://localhost:5000/api/auth";
+        const apiStatusUrl = "http://localhost:5000/api/health/db";
+
+        async function checkApiStatus() {
+            try {
+                const response = await fetch(apiStatusUrl, {
+                    method: "GET",
+                    cache: "no-store",
+                    credentials: "include"
+                });
+
+                if (!response.ok) {
+                    return {
+                        ok: false,
+                        message: "The API is currently unavailable. Start the backend at http://localhost:5000 and try again."
+                    };
+                }
+
+                const result = await response.json().catch(() => ({}));
+                return {
+                    ok: Boolean(result && result.message),
+                    message: result?.message || "API connection verified."
+                };
+            } catch (error) {
+                return {
+                    ok: false,
+                    message: "Could not reach the API. Start the backend at http://localhost:5000 and try again."
+                };
+            }
+        }
+
+        const authLink = document.getElementById("auth-link");
+        const searchForm = document.getElementById("search-form");
+        const listingGrid = document.getElementById("listing-grid");
+        const emptyState = document.getElementById("empty-state");
+        const tenantBookings = document.getElementById("tenant-bookings");
+        const tenantBookingList = document.getElementById("tenant-booking-list");
+        const resultsCount = document.getElementById("results-count");
+        const toast = document.getElementById("toast");
+        const money = new Intl.NumberFormat("en-KE", { maximumFractionDigits: 2 });
+        let authUser = null;
+        let properties = [];
+        let bookings = [];
+        let authReady = Promise.resolve();
+        let toastTimer;
+
+        try {
+            sessionStorage.removeItem("haven-auth-token");
+            sessionStorage.removeItem("haven-auth-user");
+        } catch (error) {
+            console.error("Could not clear the legacy browser session.", error);
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add("is-visible");
+            window.clearTimeout(toastTimer);
+            toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 2600);
+        }
+
+        function createTextElement(tagName, className, text) {
+            const element = document.createElement(tagName);
+            if (className) element.className = className;
+            element.textContent = text;
+            return element;
+        }
+
+        function renderProperties() {
+            const location = document.getElementById("location").value.trim().toLowerCase();
+            const type = document.getElementById("home-type").value;
+            const budget = Number(document.getElementById("budget").value) || Infinity;
+            const matches = properties.filter((property) => {
+                const propertyLocation = [property.property_name, property.estate, property.town, property.county]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
+                return (!location || propertyLocation.includes(location)) &&
+                    (!type || property.category === type) &&
+                    Number(property.price) <= budget;
+            });
+
+            listingGrid.replaceChildren();
+            matches.forEach((property) => {
+                const card = document.createElement("article");
+                card.className = "listing-card";
+
+                const photo = document.createElement("div");
+                photo.className = "listing-photo";
+                const imagePath = Array.isArray(property.images) ? property.images[0] : null;
+                if (imagePath) {
+                    const image = document.createElement("img");
+                    image.src = new URL(imagePath, apiOrigin).href;
+                    image.alt = `Photo of ${property.property_name}`;
+                    image.loading = "lazy";
+                    photo.append(image);
+                }
+                photo.append(createTextElement("span", "badge", property.status || "Available"));
+                card.append(photo);
+
+                const info = document.createElement("div");
+                info.className = "listing-info";
+                const price = document.createElement("div");
+                price.className = "listing-price";
+                price.append(document.createTextNode(`KSh ${money.format(Number(property.price))} `));
+                price.append(createTextElement("span", "", "/ month"));
+                info.append(
+                    price,
+                    createTextElement("h3", "listing-name", property.property_name),
+                    createTextElement(
+                        "p",
+                        "listing-location",
+                        [property.estate, property.town, property.county].filter(Boolean).join(", ") || "Location not provided"
+                    ),
+                    createTextElement("div", "listing-details", property.category)
+                );
+                if (property.description) {
+                    info.append(createTextElement("p", "listing-amenities", property.description));
+                }
+                if (property.amenities) {
+                    info.append(createTextElement("p", "listing-amenities", `Amenities: ${property.amenities}`));
+                }
+                const booking = bookings.find((item) =>
+                    Number(item.property_id) === Number(property.id) &&
+                    (item.status === "pending" || item.status === "approved")
+                );
+                const bookButton = createTextElement(
+                    "button",
+                    "booking-button",
+                    booking
+                        ? `Request ${booking.status}`
+                        : property.status === "booked" || property.status === "rejected"
+                            ? "Unavailable"
+                            : "Request to book"
+                );
+                bookButton.type = "button";
+                bookButton.disabled = Boolean(booking) || property.status === "booked" || property.status === "rejected";
+                bookButton.addEventListener("click", () => requestBooking(property.id, bookButton));
+                info.append(bookButton);
+                card.append(info);
+                listingGrid.append(card);
+            });
+
+            emptyState.style.display = matches.length ? "none" : "block";
+            resultsCount.textContent = `${matches.length} ${matches.length === 1 ? "home" : "homes"} found. All property statuses are shown until admin review is available.`;
+        }
+
+        function renderTenantBookings() {
+            if (authUser?.role !== "tenant") return;
+            tenantBookings.style.display = "block";
+            tenantBookingList.replaceChildren();
+            if (bookings.length === 0) {
+                tenantBookingList.append(createTextElement("p", "listing-location", "You haven’t sent any booking requests yet."));
+                return;
+            }
+
+            bookings.forEach((booking) => {
+                const row = document.createElement("article");
+                row.className = "booking-row";
+                const details = document.createElement("div");
+                details.append(
+                    createTextElement("strong", "", booking.property_name),
+                    createTextElement("p", "", `Status: ${booking.status} · ${new Date(booking.booking_date).toLocaleDateString()}`)
+                );
+                row.append(details);
+                if (booking.status === "pending") {
+                    const cancel = createTextElement("button", "booking-cancel", "Cancel request");
+                    cancel.type = "button";
+                    cancel.addEventListener("click", () => cancelBooking(booking.id, cancel));
+                    row.append(cancel);
+                }
+                tenantBookingList.append(row);
+            });
+        }
+
+        async function bookingRequest(path, options = {}) {
+            const apiStatus = await checkApiStatus();
+            if (!apiStatus.ok) {
+                throw new Error(apiStatus.message);
+            }
+
+            const response = await fetch(`${bookingApiUrl}${path}`, {
+                ...options,
+                credentials: "include",
+                headers: {
+                    ...(options.body ? { "Content-Type": "application/json" } : {}),
+                    ...(options.headers || {})
+                }
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = "Auth.html?mode=login&role=tenant";
+                }
+                throw new Error(result.message || `Request failed with status ${response.status}.`);
+            }
+            return result;
+        }
+
+        async function requestBooking(propertyId, button) {
+            await authReady;
+            if (!authUser) {
+                window.location.href = "Auth.html?mode=login&role=tenant";
+                return;
+            }
+            if (authUser.role !== "tenant") {
+                showToast("Sign in with a tenant account to request a booking.");
+                return;
+            }
+            button.disabled = true;
+            try {
+                const result = await bookingRequest("", {
+                    method: "POST",
+                    body: JSON.stringify({ property_id: propertyId })
+                });
+                showToast(result.message);
+                await loadTenantBookings();
+            } catch (error) {
+                showToast(error.message || "Could not send your booking request.");
+                button.disabled = false;
+            }
+        }
+
+        async function cancelBooking(bookingId, button) {
+            button.disabled = true;
+            try {
+                const result = await bookingRequest(`/${bookingId}/cancel`, { method: "POST" });
+                showToast(result.message);
+                await loadTenantBookings();
+            } catch (error) {
+                showToast(error.message || "Could not cancel your booking request.");
+                button.disabled = false;
+            }
+        }
+
+        async function loadTenantBookings() {
+            if (authUser?.role !== "tenant") return;
+            const result = await bookingRequest("/mine");
+            if (!Array.isArray(result.bookings)) {
+                throw new Error("The API response did not include your booking requests.");
+            }
+            bookings = result.bookings;
+            renderTenantBookings();
+            renderProperties();
+        }
+
+        searchForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+            renderProperties();
+            document.getElementById("homes").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        async function loadProperties() {
+            try {
+                const apiStatus = await checkApiStatus();
+                if (!apiStatus.ok) {
+                    throw new Error(apiStatus.message);
+                }
+
+                const response = await fetch(apiUrl);
+                let result;
+                try {
+                    result = await response.json();
+                } catch (error) {
+                    throw new Error("The API returned an unreadable response.");
+                }
+                if (!response.ok) {
+                    throw new Error(result.message || `Request failed with status ${response.status}.`);
+                }
+                if (!Array.isArray(result.properties)) {
+                    throw new Error("The API response did not include a property list.");
+                }
+
+                properties = result.properties;
+                const categories = new Set(Array.from(
+                    document.getElementById("home-type").options,
+                    (option) => option.value
+                ));
+                properties.forEach((property) => {
+                    if (property.category && !categories.has(property.category)) {
+                        document.getElementById("home-type").append(
+                            new Option(property.category, property.category)
+                        );
+                        categories.add(property.category);
+                    }
+                });
+                renderProperties();
+            } catch (error) {
+                console.error("Could not load property listings.", error);
+                listingGrid.replaceChildren();
+                emptyState.style.display = "block";
+                emptyState.textContent = error instanceof TypeError
+                    ? "Could not reach the listings API. Make sure the backend is running at http://localhost:5000."
+                    : error.message || "Could not load property listings.";
+                resultsCount.textContent = "Homes could not be loaded.";
+            }
+        }
+
+        async function loadCurrentUser() {
+            try {
+                const response = await fetch(`${authApiUrl}/me`, { credentials: "include" });
+                if (response.status === 401) return;
+                const result = await response.json();
+                if (!response.ok || !result.user) {
+                    throw new Error(result.message || "Could not verify the signed-in account.");
+                }
+                authUser = result.user;
+                authLink.textContent = "Sign out";
+                authLink.href = "#sign-out";
+                authLink.addEventListener("click", signOut);
+                if (authUser.role === "tenant") {
+                    try {
+                        await loadTenantBookings();
+                    } catch (error) {
+                        console.error("Could not load tenant booking requests.", error);
+                        tenantBookings.style.display = "block";
+                        tenantBookingList.replaceChildren(
+                            createTextElement("p", "listing-location", error.message || "Could not load your booking requests.")
+                        );
+                    }
+                }
+            } catch (error) {
+                console.error("Could not verify the signed-in account.", error);
+            }
+        }
+
+        async function signOut(event) {
+            event.preventDefault();
+            try {
+                const response = await fetch(`${authApiUrl}/logout`, {
+                    method: "POST",
+                    credentials: "include"
+                });
+                if (!response.ok) {
+                    const result = await response.json();
+                    throw new Error(result.message || "Could not sign out.");
+                }
+                window.location.reload();
+            } catch (error) {
+                showToast(error.message || "Could not sign out.");
+            }
+        }
+
+        document.querySelectorAll(".favorite").forEach((button) => {
+            button.addEventListener("click", () => {
+                showToast("Sign in to save homes to your favorites.");
+            });
+        });
+
+        document.getElementById("current-year").textContent = new Date().getFullYear();
+        loadProperties();
+        authReady = loadCurrentUser();
+    </script>
+</body>
+</html>

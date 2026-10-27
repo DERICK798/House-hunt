@@ -1,0 +1,3 @@
+ALTER TABLE users
+MODIFY phone VARCHAR(20) NOT NULL,
+ADD CONSTRAINT uq_users_phone UNIQUE (phone);
