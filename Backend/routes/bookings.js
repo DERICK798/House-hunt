@@ -33,10 +33,10 @@ router.post("/", authenticate, requireTenant, async (req, res) => {
       return res.status(403).json({ message: "You cannot request a booking for your own property." });
     }
 
-    if (properties[0].status === "rejected" || properties[0].status === "booked") {
+    if (properties[0].status !== "approved") {
       await connection.rollback();
       transactionStarted = false;
-      return res.status(409).json({ message: "This property is not accepting booking requests." });
+      return res.status(409).json({ message: "This property is not accepting booking requests yet." });
     }
 
     const [existing] = await connection.execute(

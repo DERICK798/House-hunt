@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#315c45" />
+  <title>Admin sign in | Haven</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1e2b25;
+      --muted: #607168;
+      --green: #315c45;
+      --green-dark: #244735;
+      --paper: #f5f7f3;
+      --panel: #92d6f1;
+      --line: #e4e9e2;
+      --danger: #9c3d35;
+      --warning: #a76b12;
+      --success: #1e6b4f;
+      font-family: Inter, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f5f7f3 0%, #ebf1ed 100%);
+      color: var(--ink);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+
+    .container {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    header {
+      border-bottom: 1px solid rgba(228, 233, 226, 0.9);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 76px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -0.7px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: white;
+      border-radius: 11px;
+    }
+
+    .brand-mark svg { width: 18px; height: 18px; }
+
+    .back-link {
+      color: var(--green);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    main {
+      min-height: calc(100vh - 76px);
+      display: grid;
+      place-items: center;
+      padding: 46px 0;
+    }
+
+    .auth-box {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 48px;
+      align-items: center;
+      width: min(980px, 100%);
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(228,233,226,0.8);
+      border-radius: 22px;
+      box-shadow: 0 20px 60px rgba(17, 28, 23, 0.08);
+      padding: clamp(26px, 4vw, 52px);
+    }
+
+    .intro {
+      max-width: 460px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 14px 0 12px;
+      font-size: clamp(36px, 4vw, 54px);
+      line-height: 1.08;
+      letter-spacing: -2.2px;
+    }
+
+    .intro p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px 24px;
+    }
+
+    .card-header {
+      margin-bottom: 18px;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -0.8px;
+    }
+
+    .card-header p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .notice {
+      margin: 0 0 18px;
+      padding: 12px 14px;
+      background: #edf5ef;
+      border: 1px solid #d8e6db;
+      color: #315c45;
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .field { margin-top: 14px; }
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #495b54;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      min-height: 46px;
+      padding: 11px 12px;
+      border: 1px solid #d7dfd8;
+      border-radius: 10px;
+      background: white;
+      color: var(--ink);
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #7ca189;
+      box-shadow: 0 0 0 3px rgba(49, 92, 69, 0.12);
+    }
+
+    .button {
+      width: 100%;
+      min-height: 46px;
+      border: 0;
+      border-radius: 10px;
+      margin-top: 20px;
+      background: var(--green);
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .button:hover {
+      background: var(--green-dark);
+    }
+
+    .button:disabled {
+      opacity: 0.75;
+      cursor: wait;
+    }
+
+    .status {
+      min-height: 20px;
+      margin-top: 12px;
+      color: var(--green-dark);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .status.error { color: var(--danger); }
+
+    @media (max-width: 760px) {
+      .auth-box {
+        grid-template-columns: 1fr;
+        padding: 24px 18px;
+      }
+      .header { height: 68px; }
+      .intro { max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header">
+      <a class="brand" href="../Frontend/Home.html" aria-label="Haven home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="m3.5 11 8.5-7 8.5 7v8.5a1 1 0 0 1-1 1h-5.2v-6.1H9.7v6.1H4.5a1 1 0 0 1-1-1V11Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        Haven
+      </a>
+      <a class="back-link" href="../Frontend/Home.html">Back to site</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="auth-box">
+        <section class="intro">
+          <span class="eyebrow">Haven admin</span>
+          <h1>Review listings and manage the queue.</h1>
+          <p>Use this access for property approvals, rejections, and system summaries. Only an assigned administrator account can sign in here.</p>
+        </section>
+
+        <section class="card" aria-label="Admin sign in section">
+          <div class="card-header">
+            <h2>Admin sign in</h2>
+            <p>Sign in with your administrator credentials.</p>
+          </div>
+
+          <div class="notice">Default admin account: admin@haven.com / admin123. This can be changed in your environment settings.</div>
+
+          <form id="admin-login-form">
+            <div class="field">
+              <label for="admin-email">Email address</label>
+              <input id="admin-email" name="email" type="email" placeholder="admin@haven.com" required />
+            </div>
+
+            <div class="field">
+              <label for="admin-password">Password</label>
+              <input id="admin-password" name="password" type="password" placeholder="Enter your password" required />
+            </div>
+
+            <button class="button" type="submit">Sign in</button>
+            <p id="admin-login-status" class="status" aria-live="polite"></p>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>

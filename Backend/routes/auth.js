@@ -189,6 +189,53 @@ router.get("/me", authenticate, (req, res) => {
   });
 });
 
+router.post("/admin-login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (typeof email !== "string" || !email.trim() || typeof password !== "string" || !password) {
+    return res.status(400).json({ message: "Email and password are required." });
+  }
+
+  try {
+    const [admins] = await db.execute(
+      "SELECT id, full_name, email, password FROM admins WHERE email = ?",
+      [email.trim().toLowerCase()]
+    );
+
+    if (admins.length === 0) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const admin = admins[0];
+    const validPassword = await bcrypt.compare(password, admin.password);
+
+    if (!validPassword) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    res.set("Cache-Control", "no-store");
+    const token = jwt.sign(
+      { id: admin.id, role: "admin" },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie(AUTH_COOKIE_NAME, token, authCookieOptions());
+    res.json({
+      message: "Admin login successful",
+      user: {
+        id: admin.id,
+        full_name: admin.full_name,
+        email: admin.email,
+        role: "admin"
+      }
+    });
+  } catch (error) {
+    console.error("Admin login error:", error.message);
+    res.status(500).json({ message: "Admin login failed" });
+  }
+});
+
 router.post("/logout", logout);
 
 module.exports = router;

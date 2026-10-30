@@ -7,6 +7,7 @@ require("dotenv").config();
 const db = require("./config/DB");
 const { corsOptions, requireTrustedOrigin } = require("./middleware/trustedOrigin");
 const galleryDirectory = path.join(__dirname, "..", "Frontend", "Gallary");
+const adminDirectory = path.join(__dirname, "..", "Admin");
 
 const app = express();
 
@@ -19,7 +20,9 @@ app.use("/api", (req, res, next) => {
   next();
 });
 app.use("/Gallary", express.static(galleryDirectory));
+app.use("/Admin", express.static(adminDirectory));
 app.use("/api/auth", require("./routes/auth"));
+app.use("/api/admin", require("./routes/admin"));
 app.use("/api/properties", require("./routes/property"));
 app.use("/api/bookings", require("./routes/bookings"));
 

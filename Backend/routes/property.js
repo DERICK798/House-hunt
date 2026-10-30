@@ -44,6 +44,7 @@ router.get("/", async (req, res) => {
               GROUP_CONCAT(i.image_path ORDER BY i.id SEPARATOR '||') AS image_paths
        FROM properties p
        LEFT JOIN property_images i ON i.property_id = p.id
+       WHERE p.status = 'approved'
        GROUP BY p.id
        ORDER BY p.created_at DESC`
     );

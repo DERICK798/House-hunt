@@ -15,7 +15,10 @@ function corsOptions() {
 }
 
 function requireTrustedOrigin(req, res, next) {
-  if (!allowedOrigins.has(req.get("origin"))) {
+  const origin = req.get("origin");
+  const requestOrigin = `${req.protocol}://${req.get("host")}`;
+
+  if (origin !== requestOrigin && !allowedOrigins.has(origin)) {
     return res.status(403).json({ message: "Request origin is not allowed." });
   }
   next();

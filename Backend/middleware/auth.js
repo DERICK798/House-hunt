@@ -40,4 +40,11 @@ function requireTenant(req, res, next) {
   next();
 }
 
-module.exports = { authenticate, logout, requireLandlord, requireTenant };
+function requireAdmin(req, res, next) {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Only administrators can access this area." });
+  }
+  next();
+}
+
+module.exports = { authenticate, logout, requireLandlord, requireTenant, requireAdmin };
