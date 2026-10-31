@@ -334,11 +334,11 @@
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script>
-        const apiUrl = "http://localhost:5000/api/properties";
-        const apiOrigin = "http://localhost:5000";
-        const bookingApiUrl = "http://localhost:5000/api/bookings";
-        const authApiUrl = "http://localhost:5000/api/auth";
-        const apiStatusUrl = "http://localhost:5000/api/health/db";
+        const apiUrl = "https://house-hunt-bw7j.onrender.com/api/properties";
+        const apiOrigin = "https://house-hunt-bw7j.onrender.com";
+        const bookingApiUrl = "https://house-hunt-bw7j.onrender.com/api/bookings";
+        const authApiUrl = "https://house-hunt-bw7j.onrender.com/api/auth";
+        const apiStatusUrl = "https://house-hunt-bw7j.onrender.com/api/health/db";
 
         async function checkApiStatus() {
             try {
@@ -351,7 +351,7 @@
                 if (!response.ok) {
                     return {
                         ok: false,
-                        message: "The API is currently unavailable. Start the backend at http://localhost:5000 and try again."
+                        message: "The API is currently unavailable. Please try again later."
                     };
                 }
 
@@ -363,7 +363,7 @@
             } catch (error) {
                 return {
                     ok: false,
-                    message: "Could not reach the API. Start the backend at http://localhost:5000 and try again."
+                    message: "Could not reach the API. Please try again later."
                 };
             }
         }
@@ -628,7 +628,7 @@
                 listingGrid.replaceChildren();
                 emptyState.style.display = "block";
                 emptyState.textContent = error instanceof TypeError
-                    ? "Could not reach the listings API. Make sure the backend is running at http://localhost:5000."
+                    ? "Could not reach the listings API. Please try again later."
                     : error.message || "Could not load property listings.";
                 resultsCount.textContent = "Homes could not be loaded.";
             }

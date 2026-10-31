@@ -1,5 +1,6 @@
-const ADMIN_API_URL = "http://localhost:5000/api/admin";
-const AUTH_API_URL = "http://localhost:5000/api/auth";
+const API_ORIGIN = "https://house-hunt-bw7j.onrender.com";
+const ADMIN_API_URL = `${API_ORIGIN}/api/admin`;
+const AUTH_API_URL = `${API_ORIGIN}/api/auth`;
 
 function setStatus(element, message, isError = false) {
   if (!element) return;
@@ -97,7 +98,7 @@ function escapeHtml(value) {
 function getImageUrl(imagePath) {
   if (!imagePath) return "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1000&q=80";
   if (/^https?:\/\//i.test(imagePath)) return imagePath;
-  return `http://localhost:5000${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
+  return `${API_ORIGIN}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
 }
 
 function toTitleCase(value) {

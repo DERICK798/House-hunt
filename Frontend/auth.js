@@ -4,8 +4,8 @@ const loginPanel = document.getElementById("login-panel");
 const registerPanel = document.getElementById("register-panel");
 const loginForm = document.getElementById("login-form");
 const registerForm = document.getElementById("register-form");
-const authApiUrl = "http://localhost:5000/api/auth";
-const apiStatusUrl = "http://localhost:5000/api/health/db";
+const authApiUrl = "https://house-hunt-bw7j.onrender.com/api/auth";
+const apiStatusUrl = "https://house-hunt-bw7j.onrender.com/api/health/db";
 
 async function checkApiStatus() {
     try {
@@ -18,7 +18,7 @@ async function checkApiStatus() {
         if (!response.ok) {
             return {
                 ok: false,
-                message: "The API is currently unavailable. Start the backend at http://localhost:5000 and try again."
+                message: "The API is currently unavailable. Please try again later."
             };
         }
 
@@ -30,7 +30,7 @@ async function checkApiStatus() {
     } catch (error) {
         return {
             ok: false,
-            message: "Could not reach the API. Start the backend at http://localhost:5000 and try again."
+            message: "Could not reach the API. Please try again later."
         };
     }
 }
@@ -122,7 +122,7 @@ function setStatus(elementId, message, isError) {
 
 function reportRequestError(elementId, error) {
     if (error instanceof TypeError) {
-        setStatus(elementId, "Could not reach the API. Start the backend at http://localhost:5000 and try again.", true);
+        setStatus(elementId, "Could not reach the API. Please try again later.", true);
         return;
     }
     setStatus(elementId, error.message || "The request failed. Please try again.", true);

@@ -1,8 +1,8 @@
-const apiUrl = "http://localhost:5000/api/properties";
-const bookingApiUrl = "http://localhost:5000/api/bookings";
-const authApiUrl = "http://localhost:5000/api/auth";
-const apiOrigin = "http://localhost:5000";
-const apiStatusUrl = "http://localhost:5000/api/health/db";
+const apiUrl = "https://house-hunt-bw7j.onrender.com/api/properties";
+const bookingApiUrl = "https://house-hunt-bw7j.onrender.com/api/bookings";
+const authApiUrl = "https://house-hunt-bw7j.onrender.com/api/auth";
+const apiOrigin = "https://house-hunt-bw7j.onrender.com";
+const apiStatusUrl = "https://house-hunt-bw7j.onrender.com/api/health/db";
 const form = document.getElementById("listing-form");
 const fields = document.getElementById("listing-fields");
 const list = document.getElementById("listing-list");
@@ -24,7 +24,7 @@ async function checkApiStatus() {
         if (!response.ok) {
             return {
                 ok: false,
-                message: "The API is currently unavailable. Start the backend at http://localhost:5000 and try again."
+                message: "The API is currently unavailable. Please try again later."
             };
         }
 
@@ -36,7 +36,7 @@ async function checkApiStatus() {
     } catch (error) {
         return {
             ok: false,
-            message: "Could not reach the API. Start the backend at http://localhost:5000 and try again."
+            message: "Could not reach the API. Please try again later."
         };
     }
 }
@@ -272,7 +272,7 @@ async function loadListings() {
     } catch (error) {
         console.error("Could not load landlord properties.", error);
         setNotice(error instanceof TypeError
-            ? "Could not reach the API. Start the backend at http://localhost:5000 and reload."
+            ? "Could not reach the API. Please try again later."
             : error.message || "Could not load your properties.", true);
     }
 }
@@ -303,7 +303,7 @@ form.addEventListener("submit", async (event) => {
     } catch (error) {
         console.error("Could not submit property.", error);
         setNotice(error instanceof TypeError
-            ? "Could not reach the API. Start the backend at http://localhost:5000 and try again."
+            ? "Could not reach the API. Please try again later."
             : error.message || "Could not submit this property.", true);
     } finally {
         setFormPending(false);
