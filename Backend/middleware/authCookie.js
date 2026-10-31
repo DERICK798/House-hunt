@@ -3,8 +3,8 @@ const AUTH_COOKIE_NAME = "haven_auth";
 function authCookieOptions() {
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000
   };

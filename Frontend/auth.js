@@ -158,7 +158,7 @@ loginForm.addEventListener("submit", async (event) => {
         setStatus("login-status", `Welcome, ${response.user.full_name}. You are signed in as a ${response.user.role}.`, false);
         window.location.href = response.user.role === "tenant"
             ? "Home.html"
-            : "Landlord/index.html";
+            : "landlord/index.html";
     } catch (error) {
         reportRequestError("login-status", error);
     } finally {
