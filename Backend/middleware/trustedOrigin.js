@@ -1,5 +1,5 @@
 const allowedOrigins = new Set(
-  (process.env.FRONTEND_ORIGINS || "http://localhost:5500")
+  (process.env.FRONTEND_ORIGINS || "http://localhost:5500,https://derick798.github.io")
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean)
