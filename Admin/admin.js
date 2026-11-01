@@ -112,13 +112,19 @@ async function loadSummary() {
   try {
     const result = await apiRequest(`${ADMIN_API_URL}/summary`);
     const values = result.summary || {};
-    const total = Object.values(values).reduce((sum, value) => sum + Number(value || 0), 0);
+    const total = Number(values.total_listings ?? (
+      Number(values.pending || 0) +
+      Number(values.approved || 0) +
+      Number(values.rejected || 0)
+    ));
 
     const cards = [
       { key: "pending", label: "Pending review", value: Number(values.pending || 0), tone: "warning" },
       { key: "approved", label: "Approved", value: Number(values.approved || 0), tone: "success" },
       { key: "rejected", label: "Rejected", value: Number(values.rejected || 0), tone: "danger" },
-      { key: "total", label: "Total listings", value: total, tone: "neutral" }
+      { key: "total", label: "Total listings", value: total, tone: "neutral" },
+      { key: "users", label: "Total users", value: Number(values.total_users || 0), tone: "neutral" },
+      { key: "landlords", label: "Landlords", value: Number(values.landlords || 0), tone: "success" }
     ];
 
     summary.innerHTML = cards.map((card) => `
