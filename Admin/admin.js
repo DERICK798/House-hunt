@@ -111,7 +111,19 @@ async function loadSummary() {
 
   try {
     const result = await apiRequest(`${ADMIN_API_URL}/summary`);
-    const values = result.summary || {};
+    const values = result.summary;
+    if (
+      !values ||
+      values.total_users === undefined ||
+      values.landlords === undefined ||
+      !Number.isSafeInteger(values.total_users) ||
+      !Number.isSafeInteger(values.landlords) ||
+      values.total_users < 0 ||
+      values.landlords < 0
+    ) {
+      throw new Error("User and landlord counts are missing from the admin API. Deploy the latest backend update and reload.");
+    }
+
     const total = Number(values.total_listings ?? (
       Number(values.pending || 0) +
       Number(values.approved || 0) +
@@ -123,8 +135,8 @@ async function loadSummary() {
       { key: "approved", label: "Approved", value: Number(values.approved || 0), tone: "success" },
       { key: "rejected", label: "Rejected", value: Number(values.rejected || 0), tone: "danger" },
       { key: "total", label: "Total listings", value: total, tone: "neutral" },
-      { key: "users", label: "Total users", value: Number(values.total_users || 0), tone: "neutral" },
-      { key: "landlords", label: "Landlords", value: Number(values.landlords || 0), tone: "success" }
+      { key: "users", label: "Total users", value: Number(values.total_users), tone: "neutral" },
+      { key: "landlords", label: "Landlords", value: Number(values.landlords), tone: "success" }
     ];
 
     summary.innerHTML = cards.map((card) => `

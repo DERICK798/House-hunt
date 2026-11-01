@@ -169,13 +169,22 @@ router.get("/summary", authenticate, requireAdmin, async (req, res) => {
     const [rows] = await db.execute(
       "SELECT status, COUNT(*) AS total FROM properties GROUP BY status ORDER BY status"
     );
+    const [[userCounts]] = await db.execute(
+      `SELECT COUNT(*) AS total_users,
+              COUNT(CASE WHEN role = 'landlord' THEN 1 END) AS landlords
+       FROM users`
+    );
 
-    res.json({
-      summary: rows.reduce((accumulator, item) => {
-        accumulator[item.status] = Number(item.total);
-        return accumulator;
-      }, {})
-    });
+    const summary = rows.reduce((accumulator, item) => {
+      accumulator[item.status] = Number(item.total);
+      return accumulator;
+    }, {});
+
+    summary.total_listings = rows.reduce((total, item) => total + Number(item.total), 0);
+    summary.total_users = Number(userCounts.total_users);
+    summary.landlords = Number(userCounts.landlords);
+
+    res.json({ summary });
   } catch (error) {
     console.error("Could not load admin summary:", error.message);
     res.status(500).json({ message: "Could not load the admin summary." });
