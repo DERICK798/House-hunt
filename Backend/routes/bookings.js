@@ -18,7 +18,10 @@ router.post("/", authenticate, requireTenant, async (req, res) => {
     transactionStarted = true;
 
     const [properties] = await connection.execute(
-      "SELECT id, landlord_id, status FROM properties WHERE id = ? FOR UPDATE",
+      `SELECT p.id, p.landlord_id, p.status, u.phone AS landlord_phone
+       FROM properties p
+       JOIN users u ON u.id = p.landlord_id
+       WHERE p.id = ? FOR UPDATE`,
       [propertyId]
     );
     if (properties.length === 0) {
@@ -59,8 +62,13 @@ router.post("/", authenticate, requireTenant, async (req, res) => {
     transactionStarted = false;
 
     res.status(201).json({
-      message: "Your booking request was sent to the landlord.",
-      booking: { id: result.insertId, property_id: propertyId, status: "pending" }
+      message: `Your booking request was sent to the landlord. Landlord phone: ${properties[0].landlord_phone}`,
+      booking: {
+        id: result.insertId,
+        property_id: propertyId,
+        status: "pending",
+        landlord_phone: properties[0].landlord_phone
+      }
     });
   } catch (error) {
     if (transactionStarted) await connection.rollback();
