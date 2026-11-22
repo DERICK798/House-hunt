@@ -4,29 +4,11 @@ const jwt = require("jsonwebtoken");
 const db = require("../config/DB");
 const { AUTH_COOKIE_NAME, authCookieOptions } = require("../middleware/authCookie");
 const { authenticate, requireAdmin } = require("../middleware/auth");
+const loginRateLimit = require("../middleware/loginRateLimit");
 
 const router = express.Router();
-const DEFAULT_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "admin@haven.com").trim().toLowerCase();
-const DEFAULT_ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 
-async function ensureDefaultAdmin() {
-  const [existing] = await db.execute(
-    "SELECT id FROM admins WHERE email = ?",
-    [DEFAULT_ADMIN_EMAIL]
-  );
-
-  if (existing.length > 0) {
-    return;
-  }
-
-  const hashedPassword = await bcrypt.hash(DEFAULT_ADMIN_PASSWORD, 12);
-  await db.execute(
-    "INSERT INTO admins (full_name, email, password) VALUES (?, ?, ?)",
-    ["System Administrator", DEFAULT_ADMIN_EMAIL, hashedPassword]
-  );
-}
-
-router.post("/login", async (req, res) => {
+router.post("/login", loginRateLimit, async (req, res) => {
   const { email, password } = req.body;
 
   if (typeof email !== "string" || !email.trim() || typeof password !== "string" || !password) {
@@ -34,8 +16,6 @@ router.post("/login", async (req, res) => {
   }
 
   try {
-    await ensureDefaultAdmin();
-
     const [admins] = await db.execute(
       "SELECT id, full_name, email, password FROM admins WHERE email = ?",
       [email.trim().toLowerCase()]
@@ -48,7 +28,8 @@ router.post("/login", async (req, res) => {
     const admin = admins[0];
     const validPassword = await bcrypt.compare(password, admin.password);
 
-    if (!validPassword) {
+    // Reject the legacy fallback credential if it was used to create an old account.
+    if (!validPassword || password === "admin123") {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 

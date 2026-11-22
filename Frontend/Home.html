@@ -551,7 +551,10 @@
                     method: "POST",
                     body: JSON.stringify({ property_id: propertyId })
                 });
-                showToast(result.message);
+                const landlordPhone = result.booking?.landlord_phone;
+                showToast(landlordPhone
+                    ? `Booking sent. Landlord number: ${landlordPhone}`
+                    : result.message);
                 await loadTenantBookings();
             } catch (error) {
                 showToast(error.message || "Could not send your booking request.");

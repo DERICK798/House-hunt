@@ -189,7 +189,7 @@ router.get("/me", authenticate, (req, res) => {
   });
 });
 
-router.post("/admin-login", async (req, res) => {
+router.post("/admin-login", loginRateLimit, async (req, res) => {
   const { email, password } = req.body;
 
   if (typeof email !== "string" || !email.trim() || typeof password !== "string" || !password) {
@@ -209,7 +209,7 @@ router.post("/admin-login", async (req, res) => {
     const admin = admins[0];
     const validPassword = await bcrypt.compare(password, admin.password);
 
-    if (!validPassword) {
+    if (!validPassword || password === "admin123") {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
