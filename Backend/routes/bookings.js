@@ -21,8 +21,12 @@ router.post("/", authenticate, requireTenant, async (req, res) => {
       `SELECT p.id, p.landlord_id, p.status, u.phone AS landlord_phone
        FROM properties p
        JOIN users u ON u.id = p.landlord_id
+        HEAD
        WHERE p.id = ?
        FOR UPDATE`,
+
+       WHERE p.id = ? FOR UPDATE`,
+
       [propertyId]
     );
     if (properties.length === 0) {
@@ -63,7 +67,11 @@ router.post("/", authenticate, requireTenant, async (req, res) => {
     transactionStarted = false;
 
     res.status(201).json({
+<<<<<<< HEAD
       message: "Your booking request was sent to the landlord.",
+=======
+      message: `Your booking request was sent to the landlord. Landlord phone: ${properties[0].landlord_phone}`,
+>>>>>>> f54583fb103e5d5e631945cf3d0b26b9836e2815
       booking: {
         id: result.insertId,
         property_id: propertyId,
