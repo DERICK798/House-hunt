@@ -1,6 +1,6 @@
 
 const db = require('../config/db');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // REGISTER TENANT OR LANDLORD
