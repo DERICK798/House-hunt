@@ -1,26 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f8f4">
+    <title>Find a home | Haven</title>
+    <style>
+        :root { color-scheme: light; --ink:#202b25; --muted:#68756c; --green:#315c45; --green-dark:#244735; --paper:#f7f8f4; --white:#fff; --line:#e5e9e3; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+        * { box-sizing:border-box; }
+        body { margin:0; color:var(--ink); background:var(--paper); }
+        a { color:inherit; text-decoration:none; }
+        button,input,select { font:inherit; }
+        .container { width:min(1120px,calc(100% - 40px)); margin:0 auto; }
+        header { background:rgba(247,248,244,.94); border-bottom:1px solid var(--line); }
+        .header { min-height:72px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+        .brand { display:inline-flex; align-items:center; gap:10px; font-size:21px; font-weight:750; letter-spacing:-.7px; }
+        .brand-mark { width:34px; height:34px; display:grid; place-items:center; color:#fff; background:var(--green); border-radius:11px; }
+        .brand-mark svg { width:20px; height:20px; }
+        .nav { display:flex; align-items:center; gap:18px; color:var(--green); font-size:13px; font-weight:650; }
+        .nav button { padding:0; color:inherit; background:none; border:0; cursor:pointer; }
+        .hero { padding:54px 0 36px; }
+        .eyebrow { color:var(--green); font-size:11px; font-weight:750; letter-spacing:1.2px; text-transform:uppercase; }
+        h1 { max-width:690px; margin:12px 0 10px; font-size:clamp(36px,6vw,60px); line-height:1.04; letter-spacing:-2.8px; }
+        .hero p { max-width:570px; margin:0; color:var(--muted); font-size:15px; line-height:1.7; }
+        .search { display:grid; grid-template-columns:1fr 220px auto; gap:10px; margin-top:25px; padding:12px; background:#fff; border:1px solid var(--line); border-radius:13px; box-shadow:0 10px 30px rgba(32,43,37,.05); }
+        input,select { width:100%; min-height:44px; padding:10px 12px; color:var(--ink); background:#fff; border:1px solid #dce3dc; border-radius:8px; outline:none; font-size:13px; }
+        input:focus,select:focus { border-color:#6e9278; box-shadow:0 0 0 3px rgba(49,92,69,.1); }
+        .button { min-height:44px; padding:0 18px; color:#fff; background:var(--green); border:0; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; }
+        .button:hover { background:var(--green-dark); }
+        .button:disabled { opacity:.65; cursor:wait; }
+        main { padding-bottom:70px; }
+        .section-heading { display:flex; align-items:end; justify-content:space-between; gap:16px; margin:12px 0 18px; }
+        h2 { margin:0; font-size:23px; letter-spacing:-.7px; }
+        .result-count { color:var(--muted); font-size:12px; }
+        .status { margin:0 0 18px; padding:12px 14px; color:#405b48; background:#e9f0e9; border:1px solid #d7e4d8; border-radius:9px; font-size:13px; line-height:1.55; }
+        .status.error { color:#8c302a; background:#fff0ee; border-color:#f0cfca; }
+        .status:empty { display:none; }
+        .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+        .card { min-width:0; overflow:hidden; background:#fff; border:1px solid var(--line); border-radius:13px; }
+        .card-image { width:100%; height:210px; display:block; object-fit:cover; background:#e9eee7; }
+        .card-body { padding:16px; }
+        .card-top { display:flex; align-items:start; justify-content:space-between; gap:10px; }
+        .card h3 { margin:0; font-size:16px; line-height:1.35; }
+        .category { flex:none; padding:4px 8px; color:var(--green); background:#edf2ec; border-radius:20px; font-size:10px; font-weight:700; }
+        .location { margin:7px 0 0; color:var(--muted); font-size:12px; }
+        .description { min-height:39px; margin:12px 0; color:#59665d; font-size:12px; line-height:1.6; }
+        .card-bottom { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-top:12px; border-top:1px solid var(--line); }
+        .price { color:var(--green-dark); font-size:15px; font-weight:750; }
+        .price small { color:var(--muted); font-size:10px; font-weight:500; }
+        .request-button { min-height:36px; padding:0 12px; font-size:11px; }
+        .empty { grid-column:1/-1; padding:36px 18px; color:var(--muted); background:#fff; border:1px dashed #d6ded6; border-radius:12px; text-align:center; font-size:13px; line-height:1.6; }
+        footer { padding:20px 0; color:var(--muted); border-top:1px solid var(--line); font-size:11px; }
+        @media(max-width:850px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media(max-width:600px) { .container { width:min(100% - 32px,520px); } .header { min-height:64px; } .nav { gap:12px; font-size:12px; } .hero { padding:38px 0 28px; } h1 { letter-spacing:-1.8px; } .search { grid-template-columns:1fr; } .grid { grid-template-columns:1fr; } .card-image { height:220px; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header">
+            <a class="brand" href="Home.html" aria-label="Haven home">
+                <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m3.5 11 8.5-7 8.5 7v8.5a1 1 0 0 1-1 1h-5.2v-6.1H9.7v6.1H4.5a1 1 0 0 1-1-1V11Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                Haven
+            </a>
+            <nav class="nav" aria-label="Account"><a id="account-link" href="Auth.html?mode=login&role=tenant">Sign in</a><a id="landlord-link" href="Auth.html?mode=login&role=landlord">List a home</a><button id="signout-button" type="button" hidden>Sign out</button></nav>
+        </div>
+    </header>
+    <section class="hero container">
+        <span class="eyebrow">Find a place to call home</span>
+        <h1>A better home starts with a better search.</h1>
+        <p>Explore available rentals and find a place that fits your life, your location, and your budget.</p>
+        <form class="search" id="search-form" role="search">
+            <input id="search-query" type="search" placeholder="Search by home, town, or estate" aria-label="Search homes">
+            <select id="county-filter" aria-label="Filter by county"><option value="">All counties</option><option>Nairobi</option><option>Meru</option><option>Tharaka-Nithi</option><option>Other</option></select>
+            <button class="button" type="submit">Search homes</button>
+        </form>
+    </section>
+    <main class="container">
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+        <div class="section-heading"><h2>Homes for rent</h2><span class="result-count" id="result-count"></span></div>
+        <section class="grid" id="property-list" aria-label="Available homes" aria-live="polite"><div class="empty">Loading available homes…</div></section>
+    </main>
+    <footer><div class="container">Haven · Find your next home</div></footer>
+    <script>
+        const API = "https://house-hunt-bw7j.onrender.com/api";
+        const propertyList = document.getElementById("property-list");
+        const statusBox = document.getElementById("status");
+        let allProperties = [];
+        let authUser = null;
+
+        function setStatus(message, isError = false) {
+            statusBox.textContent = message || "";
+            statusBox.classList.toggle("error", isError);
+        }
+
+        async function apiRequest(path, options = {}) {
+            const response = await fetch(`${API}${path}`, {
+                credentials: "include",
+                cache: "no-store",
+                ...options,
+                headers: { ...(options.body ? { "Content-Type": "application/json" } : {}), ...(options.headers || {}) }
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.message || `Request failed (${response.status}).`);
+            return result;
+        }
+
+        function renderProperties(properties) {
+            document.getElementById("result-count").textContent = `${properties.length} ${properties.length === 1 ? "home" : "homes"}`;
+            if (!properties.length) {
+                propertyList.innerHTML = '<div class="empty">No homes match that search. Try another location or clear your filters.</div>';
+                return;
+            }
+            propertyList.innerHTML = properties.map((property) => {
+                const photo = property.images?.[0] || "";
+                const location = [property.estate, property.town, property.county].filter(Boolean).join(", ") || "Location not specified";
+                const description = property.description || "Contact the landlord to learn more about this home.";
+                const image = photo ? `${API.replace(/\/api$/, "")}${photo}` : "";
+                return `<article class="card">
+                    ${image ? `<img class="card-image" src="${image}" alt="${escapeHtml(property.property_name)}" loading="lazy">` : '<div class="card-image" aria-label="No photo available"></div>'}
+                    <div class="card-body"><div class="card-top"><h3>${escapeHtml(property.property_name)}</h3><span class="category">${escapeHtml(property.category || "Rental")}</span></div>
+                    <p class="location">${escapeHtml(location)}</p><p class="description">${escapeHtml(description)}</p>
+                    <div class="card-bottom"><span class="price">KSh ${Number(property.price).toLocaleString("en-KE")} <small>/ month</small></span>
+                    <button class="button request-button" type="button" data-property-id="${Number(property.id)}">Request booking</button></div></div>
+                </article>`;
+            }).join("");
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[char]);
+        }
+
+        function applyFilters() {
+            const query = document.getElementById("search-query").value.trim().toLowerCase();
+            const county = document.getElementById("county-filter").value.toLowerCase();
+            renderProperties(allProperties.filter((property) => {
+                const text = [property.property_name, property.category, property.town, property.estate, property.county, property.description].join(" ").toLowerCase();
+                return (!query || text.includes(query)) && (!county || String(property.county || "").toLowerCase() === county);
+            }));
+        }
+
+        async function loadProperties() {
+            try {
+                const result = await apiRequest("/properties");
+                allProperties = Array.isArray(result.properties) ? result.properties : [];
+                applyFilters();
+                if (!allProperties.length) setStatus("There are no approved homes to show yet.");
+            } catch (error) {
+                propertyList.innerHTML = '<div class="empty">We couldn’t load homes right now. Please try again in a moment.</div>';
+                document.getElementById("result-count").textContent = "";
+                setStatus(error.message || "Could not connect to the homes service.", true);
+            }
+        }
+
+        async function loadAccount() {
+            try {
+                const result = await apiRequest("/auth/me");
+                authUser = result.user || null;
+                if (!authUser) return;
+                if (authUser.role === "tenant") {
+                    document.getElementById("account-link").textContent = "My bookings";
+                    document.getElementById("account-link").href = "#bookings";
+                    document.getElementById("account-link").addEventListener("click", showBookings);
+                } else {
+                    document.getElementById("account-link").textContent = "Browse homes";
+                    document.getElementById("account-link").href = "Home.html";
+                }
+                document.getElementById("landlord-link").hidden = authUser.role !== "landlord";
+                document.getElementById("landlord-link").href = "landlord/index.html";
+                document.getElementById("signout-button").hidden = false;
+            } catch (_) { authUser = null; }
+        }
+
+        async function showBookings(event) {
+            event.preventDefault();
+            setStatus("Loading your booking requests…");
+            try {
+                const result = await apiRequest("/bookings/mine");
+                const bookings = result.bookings || [];
+                setStatus(bookings.length ? bookings.map((booking) => `${booking.property_name}: ${booking.status}`).join(" · ") : "You don’t have any booking requests yet.");
+            } catch (error) { setStatus(error.message, true); }
+        }
+
         async function requestBooking(propertyId, button) {
-            await authReady;
             if (!authUser) {
                 window.location.href = "Auth.html?mode=login&role=tenant";
                 return;
             }
             if (authUser.role !== "tenant") {
-                showToast("Sign in with a tenant account to request a booking.");
+                setStatus("Sign in with a tenant account to request a booking.", true);
                 return;
             }
             button.disabled = true;
             try {
-                const result = await bookingRequest("", {
-                    method: "POST",
-                    body: JSON.stringify({ property_id: propertyId })
-                });
+                const result = await apiRequest("/bookings", { method: "POST", body: JSON.stringify({ property_id: propertyId }) });
                 const landlordPhone = result.booking?.landlord_phone;
-                showToast(landlordPhone
-                    ? `Booking sent. Landlord number: ${landlordPhone}`
-                    : result.message);
-                await loadTenantBookings();
+                setStatus(landlordPhone ? `Booking sent. Landlord number: ${landlordPhone}` : result.message || "Booking request sent.");
             } catch (error) {
-                showToast(error.message || "Could not send your booking request.");
+                setStatus(error.message || "Could not send your booking request.", true);
                 button.disabled = false;
             }
         }
+
+        document.getElementById("search-form").addEventListener("submit", (event) => { event.preventDefault(); applyFilters(); });
+        document.getElementById("search-query").addEventListener("input", applyFilters);
+        document.getElementById("county-filter").addEventListener("change", applyFilters);
+        propertyList.addEventListener("click", (event) => {
+            const button = event.target.closest("[data-property-id]");
+            if (button) requestBooking(button.dataset.propertyId, button);
+        });
+        document.getElementById("signout-button").addEventListener("click", async () => {
+            try { await apiRequest("/auth/logout", { method: "POST" }); } catch (_) {}
+            window.location.reload();
+        });
+
+        Promise.all([loadProperties(), loadAccount()]);
+    </script>
+</body>
+</html>
