@@ -11,6 +11,8 @@ const adminDirectory = path.join(__dirname, "..", "Admin");
 
 const app = express();
 
+// Render terminates HTTPS at its proxy and forwards the original protocol.
+app.set("trust proxy", 1);
 app.use(cors(corsOptions()));
 app.use(express.json());
 app.use("/api", (req, res, next) => {
