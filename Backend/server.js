@@ -21,6 +21,10 @@ app.use("/api", (req, res, next) => {
 });
 app.use("/Gallary", express.static(galleryDirectory));
 app.use("/Admin", express.static(adminDirectory));
+app.get("/admin-setup", (req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.sendFile(path.join(__dirname, "admin-setup.html"));
+});
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/admin", require("./routes/admin"));
 app.use("/api/properties", require("./routes/property"));

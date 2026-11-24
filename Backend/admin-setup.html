@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>House Hunt admin setup</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: #f2f5f2; color: #1e2b25; font: 16px system-ui, sans-serif; }
+    main { width: min(440px, 100%); padding: 28px; border: 1px solid #dce5de; border-radius: 16px; background: white; box-shadow: 0 12px 36px #1e2b2514; }
+    h1 { margin: 0 0 8px; font-size: 25px; }
+    p { color: #5b6c62; line-height: 1.5; }
+    label { display: block; margin: 16px 0 6px; font-size: 14px; font-weight: 650; }
+    input { width: 100%; padding: 12px; border: 1px solid #cbd7ce; border-radius: 8px; font: inherit; }
+    button { width: 100%; margin-top: 20px; padding: 12px; border: 0; border-radius: 8px; background: #315c45; color: white; font: inherit; font-weight: 700; }
+    button:disabled { opacity: .6; }
+    #status { min-height: 24px; font-size: 14px; }
+    .error { color: #9c3028; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Create an admin account</h1>
+    <p>Temporary setup page. Use the setup secret configured in the backend environment. Remove that secret after creating the account.</p>
+    <form id="setup-form">
+      <label for="secret">One-time setup secret</label>
+      <input id="secret" type="password" autocomplete="off" required>
+      <label for="name">Full name</label>
+      <input id="name" maxlength="120" autocomplete="name" required>
+      <label for="email">Email</label>
+      <input id="email" type="email" maxlength="150" autocomplete="email" required>
+      <label for="password">Password (at least 12 characters)</label>
+      <input id="password" type="password" minlength="12" autocomplete="new-password" required>
+      <button type="submit">Create admin</button>
+      <p id="status" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+  <script>
+    const form = document.getElementById("setup-form");
+    const status = document.getElementById("status");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = form.querySelector("button");
+      button.disabled = true;
+      status.className = "";
+      status.textContent = "Creating account…";
+      try {
+        const response = await fetch("/api/admin/setup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Admin-Setup-Secret": document.getElementById("secret").value
+          },
+          body: JSON.stringify({
+            full_name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+          }),
+          cache: "no-store"
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || "Could not create admin.");
+        form.reset();
+        status.textContent = result.message;
+      } catch (error) {
+        status.className = "error";
+        status.textContent = error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

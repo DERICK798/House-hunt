@@ -5,8 +5,55 @@ const db = require("../config/DB");
 const { AUTH_COOKIE_NAME, authCookieOptions } = require("../middleware/authCookie");
 const { authenticate, requireAdmin } = require("../middleware/auth");
 const loginRateLimit = require("../middleware/loginRateLimit");
+const { timingSafeEqual } = require("node:crypto");
+const rateLimit = require("express-rate-limit");
 
 const router = express.Router();
+
+const adminSetupRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: { message: "Too many setup attempts. Try again later." }
+});
+
+router.post("/setup", adminSetupRateLimit, async (req, res) => {
+  const configuredSecret = process.env.ADMIN_SETUP_SECRET;
+  const suppliedSecret = req.get("x-admin-setup-secret") || "";
+  if (!configuredSecret || configuredSecret.length < 32) {
+    return res.status(404).json({ message: "Admin setup is unavailable." });
+  }
+
+  const expected = Buffer.from(configuredSecret);
+  const supplied = Buffer.from(suppliedSecret);
+  if (expected.length !== supplied.length || !timingSafeEqual(expected, supplied)) {
+    return res.status(403).json({ message: "Setup secret is invalid." });
+  }
+
+  const { full_name: fullName, email: rawEmail, password } = req.body || {};
+  const email = typeof rawEmail === "string" ? rawEmail.trim().toLowerCase() : "";
+  if (typeof fullName !== "string" || !fullName.trim() || fullName.trim().length > 120 ||
+      !/^\S+@\S+\.\S+$/.test(email) || email.length > 150 ||
+      typeof password !== "string" || password.length < 12 || password === "admin123") {
+    return res.status(400).json({ message: "Enter a name, valid email, and password of at least 12 characters." });
+  }
+
+  try {
+    const [existing] = await db.execute("SELECT id FROM admins WHERE email = ?", [email]);
+    if (existing.length) return res.status(409).json({ message: "An admin with that email already exists." });
+
+    const hash = await bcrypt.hash(password, 12);
+    await db.execute(
+      "INSERT INTO admins (full_name, email, password) VALUES (?, ?, ?)",
+      [fullName.trim(), email, hash]
+    );
+    res.status(201).json({ message: "Admin account created. Sign in, then remove ADMIN_SETUP_SECRET from the backend environment." });
+  } catch (error) {
+    console.error("Admin setup error:", error.message);
+    res.status(500).json({ message: "Could not create the admin account." });
+  }
+});
 
 router.post("/login", loginRateLimit, async (req, res) => {
   const { email, password } = req.body;
